@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"path": "proas-backend"
+		},
+		{
+			"path": "proas-predictive"
+		}
+	],
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "automatic",
+		"java.import.gradle.enabled": false,
+		"maven.view": "hierarchical",
+		"java.import.maven.enabled": true,
+		"java.configuration.maven.globalSettings": ".mvn/settings.xml",
+		"java.import.maven.offline.enabled": false,
+		"java.autobuild.enabled": "true",
+		"java.codeGeneration.toString.template": "${object.className}kk [${member.name()}=${member.value}, ${otherMembers}]",
+		"java.project.outputPath": "./output",
+		"java.recommendations.dependency.analytics.show": false,
+		"java.dependency.packagePresentation": "flat",
+		"xml.downloadExternalResources.enabled": true
+	}
+}

@@ -1,37 +1,50 @@
 package com.apba.proas.backend.controller.analytics;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-// @Configuration
-// @ConfigurationProperties(prefix = "proas-predictive")
+import com.apba.proas.backend.model.JSonStr;
+
+@Configuration
+@ConfigurationProperties(prefix = "proas-predictive")
 // @ComponentScan("proas-predictive")
 @Component
 public class AnalyticsWebClientConfig {
 
-    // @Value("${url}")
-    String url = "http://localhost:8762";
+    @Value("${proas-predictive.url}")
+    // String url = "http://localhost:8762"; // predictive
+    String url = "http://localhost:8761"; // predictive
 
-    // @Value("${application}")
+    @Value("${proas-predictive.application}")
     String application = "/proas-predictive";
 
-    // @Value("${timeout}")
-    int timeout = 30;
+    @Value("${proas-predictive.timeout}")
+    int timeout = 300;
 
-    // @Value("${svc.vessel}")
-    String test = "/test";
+    @Value("${proas-predictive.config}")
+    String config = "/config";
 
-    // @Value("${svc.vessel}")
+    @Value("${proas-predictive.svc-vessel}")
     String svcVessel = "/vessel";
 
-    // @Value("${svc.security}")
+    @Value("${proas-predictive.svc-security}")
     String svcSecurity = "/security/{id}";
 
-    public String getTest() {
-        return test;
+    @Value("${proas-predictive.version}")
+    String version = "codigo";
+
+    public AnalyticsWebClientConfig() {
+        super();
     }
 
-    public void setTest(String test) {
-        this.test = test;
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     public String getUrl() {
@@ -72,6 +85,21 @@ public class AnalyticsWebClientConfig {
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(getClass().getName() + JSonStr.getJSonStr().obj2json(this, true));
+        return sb.toString();
+    }
+
+    public String getConfig() {
+        return config;
+    }
+
+    public void setConfig(String config) {
+        this.config = config;
     }
 
 }

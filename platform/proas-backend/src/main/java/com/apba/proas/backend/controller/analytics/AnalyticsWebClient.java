@@ -2,7 +2,6 @@ package com.apba.proas.backend.controller.analytics;
 
 import java.time.Duration;
 
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -14,44 +13,72 @@ import com.apba.proas.backend.model.AoiState;
 import com.apba.proas.backend.model.Vessel;
 
 @Service
-@Configurable
+// @Configurable
 public class AnalyticsWebClient {
 
+    // @Autowired
     AnalyticsWebClientConfig analyticsWebClientConfig = new AnalyticsWebClientConfig();
 
-    private final WebClient webClient;
+    // AnalyticsWebClientConfig analyticsWebClientConfig = new
+    // AnalyticsWebClientConfig();
 
-    public String getTest() {
-        return getResponse(analyticsWebClientConfig.getTest())
+    private WebClient webClient;
+
+    public String getConfig() {
+        log("---------AnalyticsWebClientConfig = " + analyticsWebClientConfig);
+        String x = getResponse(analyticsWebClientConfig.getConfig())
                 .bodyToMono(String.class)
                 .block(Duration.ofSeconds(analyticsWebClientConfig.getTimeout()));
+        log("----Vessel:" + x);
+        return x;
     }
 
     public Vessel getVessel() {
-        return getResponse(analyticsWebClientConfig.getSvcVessel())
-                // .toEntity(Vessel.class)
+        Vessel x = getResponse(analyticsWebClientConfig.getSvcVessel())
                 .bodyToMono(Vessel.class)
                 .block(Duration.ofSeconds(analyticsWebClientConfig.getTimeout()));
+        log("----Vessel:" + x);
+        return x;
     }
 
     public AoiState getSecurityIndicator(@PathVariable int id) {
-        return getResponse(analyticsWebClientConfig.getSvcSecurity(), id)
+        AoiState x = getResponse(analyticsWebClientConfig.getSvcSecurity(), id)
                 .bodyToMono(AoiState.class)
                 .block(Duration.ofSeconds(analyticsWebClientConfig.getTimeout()));
+        log("----Vessel:" + x);
+        return x;
     }
 
-    public AnalyticsWebClient(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder
-                .baseUrl(analyticsWebClientConfig.getUrl() + analyticsWebClientConfig.getApplication())
-                .build();
+    public AnalyticsWebClient() {
+        getWebClient();
+        log("----AnlyticsWebClient inicializado OK");
     }
 
     public ResponseSpec getResponse(String uri, Object... objects) {
-        return this.webClient.get()
+        log("---------- LLamando a uri: " + uri);
+        return this.getWebClient()
+                .get()
                 .uri(uri, objects)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .retrieve();
+    }
+
+    public WebClient getWebClient() {
+        if (webClient == null) {
+            webClient = WebClient.builder()
+                    .baseUrl(analyticsWebClientConfig.getUrl() + analyticsWebClientConfig.getApplication())
+                    .build();
+        }
+        return webClient;
+    }
+
+    private void log(String s) {
+        System.out.println(s);
+    }
+
+    public AnalyticsWebClientConfig getAnalyticsWebClientConfig() {
+        return analyticsWebClientConfig;
     }
 
     // Mono<String> resp = headersSpec.exchangeToMono(response -> {

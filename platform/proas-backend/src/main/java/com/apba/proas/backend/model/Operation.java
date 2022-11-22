@@ -1,10 +1,10 @@
 package com.apba.proas.backend.model;
 
-public interface Variable {
-    String getVariableType();
+public interface Operation {
+    public String getOperationType();
 
     public static enum Type {
-        WIND("wind"), SURGE("surge"), CURRENT("current"), SEALEVEL("seaLevel"), MULTI_VARIABLE("multiVariable");
+        SECURITY("security"), TIME("time");
 
         final String text;
 
@@ -17,5 +17,4 @@ public interface Variable {
             return text;
         }
     }
-
 }

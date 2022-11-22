@@ -18,8 +18,8 @@ public class ProasBackendAoiService {
         log = LoggerFactory.getLogger(ProasBackendAoiService.class);
     }
 
-    public String getTest() {
-        return "{ \"msg\" : \"Hello from proas-backend\" }";
+    public String getConfig() {
+        return "{ \"msg\" : \"Hello from proas-backend: config-code\" }";
     }
 
     public Vessel getVessel() {

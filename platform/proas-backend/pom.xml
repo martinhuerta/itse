@@ -12,7 +12,7 @@
 
 	<groupId>com.apba.proas</groupId>
 	<artifactId>proas-backend</artifactId>
-	<version>1.0</version>
+	<version>1</version>
 
 	<name>proas-backend-prototype</name>
 	<description>Demo project for Spring Boot</description>
@@ -20,8 +20,16 @@
 		<java.version>11</java.version>
 		<spring-cloud.version>2021.0.1</spring-cloud.version>
         <maven.compiler.release>11</maven.compiler.release>
-		</properties>
+	</properties>
+
 	<dependencies>
+		<!-- tomar proyectos una vez instalados en eel repositorio local 
+		<dependency>
+			<groupId>com.apba.proas</groupId>
+			<artifactId>proas-model</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		-->
 		
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -80,6 +88,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
+			<version>2.1.6.RELEASE</version>
 			<optional>true</optional>
 		</dependency>
 

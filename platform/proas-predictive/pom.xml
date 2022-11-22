@@ -34,8 +34,14 @@
 	<!-- dependencia de otro proyecto: lo toma del repositorio local mvn: mvn:install -->
 		<dependency>
 			<groupId>com.apba.proas</groupId>
-			<artifactId>proas-backend</artifactId>		
+			<artifactId>proas-backend</artifactId>
 			<version>1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.apba.proas</groupId>
+			<artifactId>proas-model</artifactId>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>

@@ -7,10 +7,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.apba.proas.backend.model.AOI;
 import com.apba.proas.backend.model.AoiBuilder;
-import com.apba.proas.backend.service.JSonStr;
+import com.apba.proas.backend.model.JSonStr;
+import com.apba.proas.backend.model.Operation;
 
 @SpringBootApplication
 public class ProasBackendApplication {
+
+	public static int AOI_SIMULATED_NUMBER = 9;
 	static AOI aoi;
 
 	public static void main(String[] args) {
@@ -19,6 +22,8 @@ public class ProasBackendApplication {
 		Logger log = LoggerFactory.getLogger(ProasBackendApplication.class);
 		log.info("---------------info---ProasBackendApplication iniciado");
 		aoi = AoiBuilder.buildAoiWind();
-		JSonStr.getSonStr().obj2json(aoi.getVessel());
+		AoiBuilder.buildAOI(AOI_SIMULATED_NUMBER, Operation.Type.SECURITY.toString());
+		JSonStr.getJSonStr().obj2json(aoi.getVessel());
+
 	}
 }

@@ -1,16 +1,12 @@
 package com.apba.proas.backend.model;
 
-public class SecurityOperation implements PredictionKpi {
+public class SecurityOperation implements Operation {
 
-    String variableType = OperationKpiType.SECURITY.toString();
     float securityLevel;
 
     @Override
-    public String getVariableType() {
-        return variableType;
-    }
-
-    public void setVariableType(String s) {
+    public String getOperationType() {
+        return Operation.Type.SECURITY.toString();
     }
 
     public float getSecurityLevel() {
@@ -24,7 +20,6 @@ public class SecurityOperation implements PredictionKpi {
     @Override
     public String toString() {
         return getClass().getName() + " { " +
-                "variableType = '" + variableType + "'" +
                 ", securityLevel = " + securityLevel +
                 " }";
     }

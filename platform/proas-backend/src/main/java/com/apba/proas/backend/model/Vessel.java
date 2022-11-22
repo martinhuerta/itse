@@ -4,19 +4,35 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Vessel {
+    public static enum Type {
+        PETROL("PETROL"),
+        GAS("GAS"),
+        OTHER("OTHER");
 
-    VesselType vesselType;
+        private final String text;
+
+        Type(final String text) {
+            this.text = text;
+        }
+
+        @Override
+        public String toString() {
+            return text;
+        }
+    }
+
+    Vessel.Type vesselType;
     int LOA;
     int DWT;
     int displacement;
     String orientation;
     int aoiId;
 
-    public VesselType getVesselType() {
+    public Vessel.Type getVesselType() {
         return vesselType;
     }
 
-    public void setVesselType(VesselType type) {
+    public void setVesselType(Vessel.Type type) {
         this.vesselType = type;
     }
 

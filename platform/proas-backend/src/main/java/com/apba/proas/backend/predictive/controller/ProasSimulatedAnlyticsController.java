@@ -1,9 +1,9 @@
-package com.apba.proas.predictive.controller;
+package com.apba.proas.backend.predictive.controller;
 
 import com.apba.proas.backend.model.AOI;
 import com.apba.proas.backend.model.AoiBuilder;
+import com.apba.proas.backend.model.JSonStr;
 import com.apba.proas.backend.model.Vessel;
-import com.apba.proas.backend.service.JSonStr;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -12,13 +12,12 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.annotation.PostConstruct;
 
 /*
- * Clase cliente que desde el Proas-backend llama a los algoritmos remotos.
- * En pruebas, los algoritmos se implementan en Proas
+ * Clase que se ejecuta en remoto, lo hará en Java
  */
-//@RequestMapping("/proas-predictive")
-@RequestMapping("/proas-backend/pred")
+@RequestMapping("/proas-predictive")
 @RestController
 public class ProasSimulatedAnlyticsController {
+    public static int AOI_SIMULATED_NUMBER = 9;
 
     @GetMapping(value = "/test")
     public String getTest() {
@@ -29,7 +28,7 @@ public class ProasSimulatedAnlyticsController {
     @GetMapping(value = "/vessel")
     public String getVesselStr() {
         Vessel v = AoiBuilder.getFirstAoi().getVessel();
-        String s = JSonStr.getSonStr().obj2json(v);
+        String s = JSonStr.getJSonStr().obj2json(v);
         System.out.print("-------------/vessel = " + s + "------------");
         return s;
     }
@@ -41,7 +40,7 @@ public class ProasSimulatedAnlyticsController {
         System.out.println("---------------getAoiStateById: punto 2");
         if (aoi != null && aoi.getId() == id) {
             System.out.println("---------------getAoiStateById: punto 3");
-            String s = JSonStr.getSonStr().obj2json(aoi.getAoiState());
+            String s = JSonStr.getJSonStr().obj2json(aoi.getAoiState(), true);
             return s;
         } else {
             System.out.println("---------------getAoiStateById: punto 4");
@@ -52,7 +51,6 @@ public class ProasSimulatedAnlyticsController {
 
     @PostConstruct
     public void init() {
-        ;
     }
 
 }

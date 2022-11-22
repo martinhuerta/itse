@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.apba.proas.backend.model.AOI;
-import com.apba.proas.backend.service.JSonStr;
+import com.apba.proas.backend.model.JSonStr;
 import com.apba.proas.backend.service.ProasBackendAoiService;
 
 /*
@@ -32,20 +32,24 @@ public class ProasBackendAoiController {
         service = new ProasBackendAoiService();
     }
 
-    @GetMapping(value = "/test")
-    public String getTest() {
-        return JSonStr.getSonStr().obj2json(service.getTest());
+    public ProasBackendAoiService getService() {
+        return service;
+    }
+
+    @GetMapping(value = "/config")
+    public String getConfig() {
+        return JSonStr.getJSonStr().obj2json(service.getConfig());
     }
 
     @NewSpan("obtener /vessel")
     @GetMapping(value = "/vessel")
     public String getVesselStr() {
-        return JSonStr.getSonStr().obj2json(service.getVessel());
+        return JSonStr.getJSonStr().obj2json(service.getVessel());
     }
 
     @GetMapping(value = "/vessel-by-type/{vessel-type}")
     public String getVessel(@RequestParam("vessel-type") String type) {
-        return JSonStr.getSonStr().obj2json(service.getVessel(type));
+        return JSonStr.getJSonStr().obj2json(service.getVessel(type));
     }
 
     @RequestMapping(value = "/aois")
@@ -58,7 +62,7 @@ public class ProasBackendAoiController {
         AOI aoi = service.getAoiById(id);
 
         if (aoi != null && aoi.getId() == id) {
-            return JSonStr.getSonStr().obj2json(aoi);
+            return JSonStr.getJSonStr().obj2json(aoi);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     String.format("%s not found, only exists %s ", id, aoi == null ? 0 : aoi.getId()));

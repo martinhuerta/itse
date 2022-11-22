@@ -1,7 +1,7 @@
 package com.apba.proas.backend.model;
 
 public class SurgeForecast implements Variable {
-    String variableType = VariableType.SURGE.toString();
+    String variableType = Variable.Type.SURGE.toString();
     float heigh;
     float peakPeriod;
     float averagePeriod;

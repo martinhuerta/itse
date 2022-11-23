@@ -14,13 +14,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.apba.proas.backend.controller.analytics.AnalyticsWebClient;
+import com.apba.proas.backend.controller.analytics.AnalyticsWebClientConfig;
 import com.apba.proas.backend.model.AOI;
-import com.apba.proas.backend.model.JSonStr;
+import com.apba.proas.backend.model.Vessel;
 import com.apba.proas.backend.service.ProasBackendAoiService;
 
 /*
  * Clase cliente que desde el Proas-backend llama a los algoritmos remotos.
  * En pruebas, los algoritmos se implementan en Proas
+ * 
+ * Usar @JsonView(Vessel.class) --> Cuando quieres gobernar qué parámetros salen y
+ * cuales no, marcas en el Bean los que estan ligados a est clase
  */
 @RequestMapping("/proas-backend")
 @RestController
@@ -36,20 +41,25 @@ public class ProasBackendAoiController {
         return service;
     }
 
+    @GetMapping(value = "/test")
+    public String getTest() {
+        return "{msg: Hello from proas-backend}";
+    }
+
     @GetMapping(value = "/config")
-    public String getConfig() {
-        return JSonStr.getJSonStr().obj2json(service.getConfig());
+    public AnalyticsWebClientConfig getConfig() {
+        return new AnalyticsWebClient().getAnalyticsWebClientConfig();
     }
 
     @NewSpan("obtener /vessel")
     @GetMapping(value = "/vessel")
-    public String getVesselStr() {
-        return JSonStr.getJSonStr().obj2json(service.getVessel());
+    public Vessel getVesselStr() {
+        return service.getVessel();
     }
 
     @GetMapping(value = "/vessel-by-type/{vessel-type}")
-    public String getVessel(@RequestParam("vessel-type") String type) {
-        return JSonStr.getJSonStr().obj2json(service.getVessel(type));
+    public Vessel getVessel(@RequestParam("vessel-type") String type) {
+        return service.getVessel(type);
     }
 
     @RequestMapping(value = "/aois")
@@ -58,11 +68,11 @@ public class ProasBackendAoiController {
     }
 
     @RequestMapping(value = "/aoi/{id}", method = RequestMethod.GET)
-    public String getAoiById(@PathVariable("id") int id) {
+    public AOI getAoiById(@PathVariable("id") int id) {
         AOI aoi = service.getAoiById(id);
 
         if (aoi != null && aoi.getId() == id) {
-            return JSonStr.getJSonStr().obj2json(aoi);
+            return aoi;
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     String.format("%s not found, only exists %s ", id, aoi == null ? 0 : aoi.getId()));

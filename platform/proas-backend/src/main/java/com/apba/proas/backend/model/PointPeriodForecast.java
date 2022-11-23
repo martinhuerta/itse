@@ -4,7 +4,19 @@ import java.util.ArrayList;
 
 public class PointPeriodForecast {
     GpsPoint gpsPoint;
-    ArrayList<Forecast> pointPeriodForecast = new ArrayList<Forecast>();
+    ArrayList<Forecast> forecastsList = new ArrayList<Forecast>();
+
+    public ArrayList<Forecast> getForecastsList() {
+        return forecastsList;
+    }
+
+    public void setForecastsList(ArrayList<Forecast> forecastsList) {
+        this.forecastsList = forecastsList;
+    }
+
+    public void addForecast(Forecast f) {
+        forecastsList.add(f);
+    }
 
     public GpsPoint getGpsPoint() {
         return gpsPoint;
@@ -12,14 +24,6 @@ public class PointPeriodForecast {
 
     public void setGpsPoint(GpsPoint gpsPoint) {
         this.gpsPoint = gpsPoint;
-    }
-
-    public ArrayList<Forecast> getPointPeriodForecast() {
-        return pointPeriodForecast;
-    }
-
-    public void setPointPeriodForecast(ArrayList<Forecast> pointPeriodForecast) {
-        this.pointPeriodForecast = pointPeriodForecast;
     }
 
     @Override

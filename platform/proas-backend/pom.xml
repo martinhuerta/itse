@@ -31,11 +31,11 @@
 		</dependency>
 		-->
 		
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.25</version> 
-		</dependency>
+			<version>1.7.36</version> 
+		</dependency> -->
 
 		<!-- Trazabilidd de peticiones: Tracer=grupo correlacionado de peticion svcs. Span=cada peticion. @NewSpan('')-->
 		<dependency>
@@ -53,6 +53,11 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-webflux</artifactId>
 	</dependency>
+	<!-- <dependency>
+		<groupId>org.projectreactor</groupId>
+		<artifactId>reactor-spring</artifactId>
+		<version>1.0.1.RELEASE</version>
+	</dependency> -->
 
 	<!-- JSON web token 
 		<dependency>
@@ -145,12 +150,12 @@
 		</dependency>
 	--> 
 		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
 			<version>5.9.1</version>
 			<scope>test</scope>
-		</dependency>
+		</dependency> -->
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

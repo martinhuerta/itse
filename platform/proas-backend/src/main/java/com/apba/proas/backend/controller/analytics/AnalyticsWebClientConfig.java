@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
-
 import com.apba.proas.backend.model.JSonStr;
 
 @Configuration
@@ -18,7 +17,7 @@ public class AnalyticsWebClientConfig {
     String url = "http://localhost:8761"; // predictive
 
     @Value("${proas-predictive.application}")
-    String application = "/proas-predictive";
+    String applicationUri = "/proas-predictive";
 
     @Value("${proas-predictive.timeout}")
     int timeout = 300;
@@ -33,7 +32,7 @@ public class AnalyticsWebClientConfig {
     String svcSecurity = "/security/{id}";
 
     @Value("${proas-predictive.version}")
-    String version = "codigo";
+    String version = "version-hardcoded";
 
     public AnalyticsWebClientConfig() {
         super();
@@ -72,11 +71,11 @@ public class AnalyticsWebClientConfig {
     }
 
     public String getApplication() {
-        return application;
+        return applicationUri;
     }
 
     public void setApplication(String application) {
-        this.application = application;
+        this.applicationUri = application;
     }
 
     public int getTimeout() {

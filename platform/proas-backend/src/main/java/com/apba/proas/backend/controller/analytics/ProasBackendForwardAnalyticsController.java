@@ -5,7 +5,10 @@ import java.util.logging.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.apba.proas.backend.model.AoiState;
@@ -16,23 +19,31 @@ import com.apba.proas.backend.model.Vessel;
 @RestController
 public class ProasBackendForwardAnalyticsController {
 
-    // @Autowired
     private AnalyticsWebClient analyticsWebClient = new AnalyticsWebClient();
 
-    @GetMapping(value = "/config")
+    @GetMapping(value = "/test")
     public String getTest() {
-        String config = analyticsWebClient.getConfig();
-        return "proas-backend:Config " + config;
+        return "{msg: Hello from proas-backend}";
+    }
+
+    @GetMapping(value = "/config")
+    public AnalyticsWebClientConfig getConfig() {
+        return analyticsWebClient.getAnalyticsWebClientConfig();
     }
 
     @GetMapping(value = "/vessel")
-    public String getVessel() {
-        Vessel vessel = analyticsWebClient.getVessel();
-        return "Vessel " + vessel;
+    public Vessel getVessel() {
+        return analyticsWebClient.getVessel();
+    }
+
+    @PostMapping(value = "/vessel")
+    @ResponseBody // Serializa el Vessel en el Body del Response, similar al JsonView
+    public Vessel getVessel(@RequestBody Vessel vessel) { // RequestBody espera parametros de entrada en el Request.body
+        return analyticsWebClient.getVessel();
     }
 
     @GetMapping(value = "/security/{id}")
-    public String getSecurityIndicatorById(@PathVariable("id") int id) {
+    public AoiState getSecurityIndicatorById(@PathVariable("id") int id) {
         AoiState aoiState = null;
         try {
             Logger.getLogger(this.getClass().getName()).info("---------llamada a /proas-backend/security/{}id");
@@ -46,7 +57,7 @@ public class ProasBackendForwardAnalyticsController {
                     .info("---------/proas-backend/security/{}id} -- ERROR " + e);
             e.printStackTrace();
         }
-        return "AoiState " + aoiState;
+        return aoiState;
     }
 
     public AnalyticsWebClient getAnalyticsWebClient() {

@@ -12,6 +12,7 @@ import com.apba.proas.backend.controller.analytics.ProasBackendForwardAnalyticsC
 import com.apba.proas.backend.controller.server.ProasBackendAoiController;
 import com.apba.proas.backend.model.AOI;
 import com.apba.proas.backend.model.AoiBuilder;
+import com.apba.proas.backend.model.AoiState;
 import com.apba.proas.backend.model.JSonStr;
 import com.apba.proas.backend.model.Variable;
 import com.apba.proas.backend.model.Vessel;
@@ -21,23 +22,29 @@ import com.apba.proas.backend.service.ProasBackendAoiService;
 class ProasBackendApplicationTests {
 	Logger logger = LoggerFactory.getLogger(ProasBackendApplicationTests.class);
 	AOI aoi;
+	static int otherID = 9;
 	ProasBackendAoiController controller;
 	ProasBackendAoiService service;
 	ProasBackendForwardAnalyticsController analyticsController;
+
 	AnalyticsWebClient analyticsWebClient;
 	AnalyticsWebClientConfig config;
 
-	void init() {
-		aoi = AoiBuilder.buildAOI(1, Variable.Type.WIND.toString());
-		AoiBuilder.buildAOI(9, Variable.Type.WIND.toString());
-		controller = new ProasBackendAoiController();
-		controller.init();
-		service = controller.getService();
-		analyticsController = new ProasBackendForwardAnalyticsController();
-		analyticsController.getAnalyticsWebClient();
+	public ProasBackendApplicationTests() {
+		super();
+	}
 
-		analyticsWebClient = new AnalyticsWebClient();
-		config = analyticsWebClient.getAnalyticsWebClientConfig();
+	void init() {
+		if (aoi == null) {
+			aoi = AoiBuilder.buildAOI(1, Variable.Type.WIND.toString());
+			AoiBuilder.buildAOI(otherID, Variable.Type.WIND.toString());
+			controller = new ProasBackendAoiController();
+			controller.init();
+			service = controller.getService();
+			analyticsController = new ProasBackendForwardAnalyticsController();
+			analyticsWebClient = analyticsController.getAnalyticsWebClient();
+			config = analyticsWebClient.getAnalyticsWebClientConfig();
+		}
 	}
 
 	// Spring
@@ -48,15 +55,18 @@ class ProasBackendApplicationTests {
 	// JSonStr
 	@Test
 	void jSonStrTest() {
+		init();
 		assert aoi != null;
 		JSonStr.getJSonStr().obj2json(aoi.getVessel());
 	}
 
 	@Test
 	void configTest() {
-		AnalyticsWebClient a = new AnalyticsWebClient();
-		String s = a.getAnalyticsWebClientConfig().getConfig();
-		log("Configuracion: " + s);
+		init();
+		String s = config.getVersion();
+		// int i = s.indexOf("hardcoded");
+		// assert i < 0;
+		log("getConfig(): " + s);
 	}
 
 	@Test
@@ -64,7 +74,7 @@ class ProasBackendApplicationTests {
 		init();
 		log("Local AOIs: " + AoiBuilder.getAois());
 		aoi = AoiBuilder.buildAOI(1, Variable.Type.WIND.toString());
-		AoiBuilder.buildAOI(9, Variable.Type.WIND.toString());
+		AoiBuilder.buildAOI(otherID, Variable.Type.WIND.toString());
 		AOI aoi1 = AoiBuilder.getAoi(9);
 		assert aoi1 != null;
 		assert aoi1.getId() == 9;
@@ -73,18 +83,59 @@ class ProasBackendApplicationTests {
 	}
 
 	@Test
+	void getHttpConfig() {
+		init();
+		try {
+			String x = analyticsWebClient.getResponse(config.getConfig())
+					.bodyToMono(String.class)
+					.block(Duration.ofSeconds(config.getTimeout()));
+			assert x != null;
+			log("Test getHttpConfig() OK: " + x);
+		} catch (Exception e) {
+			log("ERROR - Debes tener el servicio ProasBackendApplication lanzado");
+			e.printStackTrace();
+			throw e;
+		}
+	}
+
+	@Test
 	void getHttpVessel() {
 		init();
+		Vessel v = aoi.getVessel();
 		analyticsWebClient.getAnalyticsWebClientConfig();
-		Vessel x = analyticsWebClient.getResponse(config.getSvcVessel())
-				.bodyToMono(Vessel.class)
-				.block(Duration.ofSeconds(config.getTimeout()));
-		assert x != null;
-		log("Http: Vessel: " + x);
+		try {
+			Vessel x = analyticsWebClient.getResponse(config.getSvcSecurity())
+					.bodyToMono(Vessel.class)
+					.block(Duration.ofSeconds(config.getTimeout()));
+			assert x != null;
+			assert x.getDWT() == v.getDWT();
+			log("Test getHttpVessel() OK: " + x);
+		} catch (Exception e) {
+			log("ERROR - Debes tener el servicio ProasBackendApplication lanzado");
+			e.printStackTrace();
+			throw e;
+		}
+	}
+
+	@Test
+	void getHttpSecurity() {
+		init();
+		try {
+			AoiState x = analyticsWebClient.getResponse(config.getSvcVessel(), otherID)
+					.bodyToMono(AoiState.class)
+					.block(Duration.ofSeconds(config.getTimeout()));
+			assert x != null;
+			assert x.getAoiId() == otherID;
+			log("Test getHttpSecurity() OK: " + x);
+		} catch (Exception e) {
+			log("ERROR - Debes tener el servicio ProasBackendApplication lanzado");
+			e.printStackTrace();
+			throw e;
+		}
 	}
 
 	private void log(String s) {
-		logger.debug("-----------" + s);
+		System.out.println("############# " + s + " ############# ");
 	}
 
 }

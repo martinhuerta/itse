@@ -96,7 +96,7 @@ public class AoiBuilder {
             for (int i = 0; i < aoiState.samplesNumber; i++) {
                 Forecast f = new Forecast();
                 f.gpsPoint = point;
-                pp.pointPeriodForecast.add(f);
+                pp.forecastsList.add(f);
                 f.windForecast = newRandomWindValue(50);
 
                 t1 += (long) aoiState.interval * 60 * 1000;

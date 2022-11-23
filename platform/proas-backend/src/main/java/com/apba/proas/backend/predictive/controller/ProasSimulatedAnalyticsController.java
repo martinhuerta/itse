@@ -16,7 +16,7 @@ import javax.annotation.PostConstruct;
  */
 @RequestMapping("/proas-predictive")
 @RestController
-public class ProasSimulatedAnlyticsController {
+public class ProasSimulatedAnalyticsController {
     public static int AOI_SIMULATED_NUMBER = 9;
 
     @GetMapping(value = "/config")

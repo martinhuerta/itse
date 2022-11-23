@@ -47,14 +47,10 @@ public class ProasBackendForwardAnalyticsController {
         AoiState aoiState = null;
         try {
             Logger.getLogger(this.getClass().getName()).info("---------llamada a /proas-backend/security/{}id");
-
             aoiState = analyticsWebClient.getSecurityIndicator(id);
-
-            Logger.getLogger(this.getClass().getName())
-                    .info("---------obtenido AoiState=" + (aoiState == null ? "null" : aoiState.toString()));
         } catch (Exception e) {
             Logger.getLogger(this.getClass().getName())
-                    .info("---------/proas-backend/security/{}id} -- ERROR " + e);
+                    .severe("---------/proas-backend/security/{}id} -- ERROR " + e);
             e.printStackTrace();
         }
         return aoiState;

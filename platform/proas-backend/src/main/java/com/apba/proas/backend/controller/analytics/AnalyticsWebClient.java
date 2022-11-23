@@ -30,7 +30,7 @@ public class AnalyticsWebClient {
     public AnalyticsWebClient() {
         analyticsWebClientConfig = new AnalyticsWebClientConfig();
         logger = LoggerFactory.getLogger(AnalyticsWebClient.class);
-        log("AnlyticsWebClient inicializado OK");
+        log("AnalyticsWebClient inicializado OK");
     }
 
     public String getConfig() {

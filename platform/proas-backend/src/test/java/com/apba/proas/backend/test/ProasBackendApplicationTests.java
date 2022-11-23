@@ -104,9 +104,10 @@ class ProasBackendApplicationTests {
 		Vessel v = aoi.getVessel();
 		analyticsWebClient.getAnalyticsWebClientConfig();
 		try {
-			Vessel x = analyticsWebClient.getResponse(config.getSvcSecurity())
+			Vessel x = analyticsWebClient.getResponse(config.getSvcVessel())
 					.bodyToMono(Vessel.class)
 					.block(Duration.ofSeconds(config.getTimeout()));
+
 			assert x != null;
 			assert x.getDWT() == v.getDWT();
 			log("Test getHttpVessel() OK: " + x);
@@ -121,7 +122,7 @@ class ProasBackendApplicationTests {
 	void getHttpSecurity() {
 		init();
 		try {
-			AoiState x = analyticsWebClient.getResponse(config.getSvcVessel(), otherID)
+			AoiState x = analyticsWebClient.getResponse(config.getSvcSecurity(), otherID)
 					.bodyToMono(AoiState.class)
 					.block(Duration.ofSeconds(config.getTimeout()));
 			assert x != null;

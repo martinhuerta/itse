@@ -29,11 +29,9 @@ public class CurrentForecast implements Variable {
         this.velocidad = velocidad;
     }
 
-    public static String TIPO_ESTADO_CORRIENTE = "CORRIENTE";
-
     @Override
     public String getVariableType() {
-        return TIPO_ESTADO_CORRIENTE;
+        return Variable.Type.CURRENT.toString();
     }
 
     @Override

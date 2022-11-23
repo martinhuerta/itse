@@ -1,5 +1,6 @@
 package com.apba.proas.backend.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AOI {
@@ -8,7 +9,7 @@ public class AOI {
     String name;
     GpsPoint center;
     Vessel vessel;
-    List<GpsPoint> points;
+    List<GpsPoint> points = new ArrayList<GpsPoint>();
     AoiState aoiState;
     String origin = "local";
 
@@ -66,5 +67,12 @@ public class AOI {
 
     public void setOrigin(String origin) {
         this.origin = origin;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(getClass().getName() + JSonStr.getJSonStr().obj2json(this, true));
+        return sb.toString();
     }
 }

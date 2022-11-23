@@ -6,17 +6,6 @@ import java.util.List;
 
 public class AoiState {
     int aoiId;
-    Timestamp fromTime;
-    Timestamp toTime;
-    int interval;
-    int samplesNumber;
-
-    // cada fecha que habrá un conjunto de puntos con estado
-    List<DateForecast> dateForecasts = new ArrayList<DateForecast>();
-
-    public void addDateForecast(DateForecast df) {
-        dateForecasts.add(df);
-    }
 
     public int getAoiId() {
         return aoiId;
@@ -24,6 +13,24 @@ public class AoiState {
 
     public void setAoiId(int aoiId) {
         this.aoiId = aoiId;
+    }
+
+    Timestamp fromTime;
+    Timestamp toTime;
+    int interval;
+    int samplesNumber;
+    List<PointPeriodForecast> pointsPeriodForecast = new ArrayList<PointPeriodForecast>();
+    List<OperationKpi> operationKpis = new ArrayList<OperationKpi>();
+
+    public void addPointPeriodForecast(PointPeriodForecast p) {
+        pointsPeriodForecast.add(p);
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(getClass().getName() + JSonStr.getJSonStr().obj2json(this, true));
+        return sb.toString();
     }
 
     public Timestamp getFromTime() {
@@ -58,27 +65,20 @@ public class AoiState {
         this.samplesNumber = samplesNumber;
     }
 
-    public List<DateForecast> getDateForecasts() {
-        return dateForecasts;
+    public List<PointPeriodForecast> getPointsPeriodForecast() {
+        return pointsPeriodForecast;
     }
 
-    public void setDateForecasts(List<DateForecast> dateForecasts) {
-        this.dateForecasts = dateForecasts;
+    public void setPointsPeriodForecast(List<PointPeriodForecast> pointsPeriodForecast) {
+        this.pointsPeriodForecast = pointsPeriodForecast;
     }
 
-    @Override
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(getClass().getName() + " { " +
-                "aoiId = " + aoiId +
-                ", fromTime = '" + fromTime.toString() + "'" +
-                ", toTime = '" + toTime.toString() + "'" +
-                ", interval = " + interval +
-                ", samplesNumber = " + samplesNumber +
-                ", dateForecasts [ ");
-        dateForecasts.stream().forEach(t -> sb.append(":").append(t.toString()).append(", "));
-        sb.append(" ] }");
-        return sb.toString();
+    public List<OperationKpi> getOperationKpis() {
+        return operationKpis;
+    }
+
+    public void setOperationKpis(List<OperationKpi> operationKpis) {
+        this.operationKpis = operationKpis;
     }
 
 }

@@ -1,7 +1,7 @@
 package com.apba.proas.backend.model;
 
 public class WindForecast implements Variable {
-    String variableType = VariableType.WIND.toString();
+    String variableType = Variable.Type.WIND.toString();
     float force;
     int angle;
     String orientiation;

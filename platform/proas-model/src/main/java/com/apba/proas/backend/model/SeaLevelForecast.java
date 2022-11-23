@@ -3,14 +3,9 @@ package com.apba.proas.backend.model;
 public class SeaLevelForecast implements Variable {
     float seaLevel;
 
-    String variableType = VariableType.SEALEVEL.toString();
-
     @Override
     public String getVariableType() {
-        return variableType;
-    }
-
-    public void setVariableType(String s) {
+        return Variable.Type.SEALEVEL.toString();
     }
 
     public float getSeaLevel() {
@@ -20,4 +15,12 @@ public class SeaLevelForecast implements Variable {
     public void setSeaLevel(float seaLevel) {
         this.seaLevel = seaLevel;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(getClass().getName() + JSonStr.getJSonStr().obj2json(this, true));
+        return sb.toString();
+    }
+
 }

@@ -1,13 +1,11 @@
 package com.apba.proas.backend.model;
 
-import java.util.Random;
-import java.util.stream.Collectors;
-
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 public class AoiBuilder {
     static int nextAoiId = 1;
@@ -41,7 +39,7 @@ public class AoiBuilder {
      * @return
      */
     public static AOI buildAoiWind() {
-        return buildAOI(0, VariableType.WIND.toString());
+        return buildAOI(0, Variable.Type.WIND.toString());
     }
 
     public static AOI buildAOI(int id, String variableType) {
@@ -61,24 +59,23 @@ public class AoiBuilder {
         aoi.center.longitude = longitude++;
         aoi.center.latitude = latitude++;
         aoi.aoiState = new AoiState();
-        aoi.points = new ArrayList<GpsPoint>();
 
         // Vessel
         Vessel vessel = new Vessel();
-        vessel.vesselType = VesselType.GAS;
+        vessel.vesselType = Vessel.Type.GAS;
         vessel.DWT = 103755;
         vessel.LOA = 244;
         vessel.displacement = 122142;
         vessel.aoiId = aoi.getId();
         aoi.vessel = vessel;
 
-        // GpsPoint - 4 points del AOI que es una línea 45%s
+        // GpsPoint - 4 points del AOI que es una línea 45%
         for (int i = 0; i < 3; i++) {
             GpsPoint point = new GpsPoint();
+            aoi.points.add(point);
             point.aoiId = aoi.id;
             point.latitude = latitude++;
             point.longitude = longitude++;
-            aoi.points.add(point);
         }
 
         // EstadosAOI
@@ -88,25 +85,35 @@ public class AoiBuilder {
         aoiState.samplesNumber = 2;
         aoiState.interval = 60; // minutos
         aoiState.aoiId = aoi.id;
+        long t1 = 0;
 
-        // DateForecast
-        long t1 = aoiState.getFromTime().getTime();
-        for (int i = 0; i < aoiState.getSamplesNumber(); i++) {
-            DateForecast df = new DateForecast();
-            aoiState.addDateForecast(df);
-            df.setTimestamp(new Timestamp(t1));
+        // Forecasts
+        for (GpsPoint point : aoi.points) {
+            PointPeriodForecast pp = new PointPeriodForecast();
+            aoiState.pointsPeriodForecast.add(pp);
 
-            for (GpsPoint p : aoi.points) {
-                DatePointForecast dpf = new DatePointForecast(df);
-                dpf.gpsPoint = p;
-                if (variableType.equals(VariableType.WIND.toString())) {
-                    dpf.variable = newRandomWindValue(50);
-                } else if (variableType.equals(OperationKpiType.SECURITY.toString())) {
-                    dpf.variable = newRandomSecurityOperation(1000);
-                }
+            t1 = aoiState.fromTime.getTime();
+            for (int i = 0; i < aoiState.samplesNumber; i++) {
+                Forecast f = new Forecast();
+                f.gpsPoint = point;
+                pp.forecastsList.add(f);
+                f.windForecast = newRandomWindValue(50);
+
+                t1 += (long) aoiState.interval * 60 * 1000;
             }
+        }
+
+        // Operaciones
+        t1 = aoiState.fromTime.getTime();
+        for (int i = 0; i < aoiState.samplesNumber; i++) {
+            OperationKpi opk = new OperationKpi();
+            aoiState.operationKpis.add(opk);
+            opk.setTimestamp(new Timestamp(t1));
+            opk.securityOperation = newRandomSecurityOperation(50);
+
             t1 += (long) aoiState.interval * 60 * 1000;
         }
+
         aoiState.toTime = new Timestamp(t1);
         return aoi;
     }
@@ -128,6 +135,13 @@ public class AoiBuilder {
         SecurityOperation s = new SecurityOperation();
         s.setSecurityLevel(rnd.nextInt(max) / 100);
         return s;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(getClass().getName() + JSonStr.getJSonStr().obj2json(this, true));
+        return sb.toString();
     }
 
 }

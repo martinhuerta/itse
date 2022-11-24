@@ -2,8 +2,11 @@ package com.apba.proas.backend.controller.analytics;
 
 import java.time.Duration;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -24,13 +27,27 @@ import reactor.core.publisher.Mono;
 // @Configurable
 public class AnalyticsWebClient {
 
+    @Autowired
     AnalyticsWebClientConfig analyticsWebClientConfig;
+
+    // no es Bean xq no crea objetos. Spring no usa este metodo
+    public AnalyticsWebClientConfig getAnalyticsWebClientConfig() {
+        return analyticsWebClientConfig;
+    }
+
     Logger logger;
 
-    public AnalyticsWebClient() {
-        analyticsWebClientConfig = new AnalyticsWebClientConfig();
+    @PostConstruct
+    public void init() {
         logger = LoggerFactory.getLogger(AnalyticsWebClient.class);
+        if (analyticsWebClientConfig == null) {
+            logger.error("AnalyticsWebclient:AnalyticsWebClientConfig NO SE HA INICIALIZADO DE FICHERO");
+        }
         log("AnalyticsWebClient inicializado OK");
+    }
+
+    public AnalyticsWebClient() {
+        super();
     }
 
     public String getConfig() {
@@ -116,10 +133,6 @@ public class AnalyticsWebClient {
     private void log(String s) {
         // System.out.println(s);
         logger.info("------------- ------------- " + s);
-    }
-
-    public AnalyticsWebClientConfig getAnalyticsWebClientConfig() {
-        return analyticsWebClientConfig;
     }
 
 }

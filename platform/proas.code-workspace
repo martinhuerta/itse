@@ -7,7 +7,7 @@
 			"path": "proas-backend"
 		},
 		{
-			"path": "proas-model"
+			"path": "proas-predictive"
 		}
 	],
 	"settings": {

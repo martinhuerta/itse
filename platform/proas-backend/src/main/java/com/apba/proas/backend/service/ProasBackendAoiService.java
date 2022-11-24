@@ -2,20 +2,17 @@ package com.apba.proas.backend.service;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
+import org.springframework.stereotype.Service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.apba.proas.backend.model.AOI;
 import com.apba.proas.backend.model.AoiBuilder;
 import com.apba.proas.backend.model.Vessel;
 
+@Service
 public class ProasBackendAoiService {
-    Logger log;
 
-    @PostConstruct
-    public void init() {
-        log = LoggerFactory.getLogger(ProasBackendAoiService.class);
+    public ProasBackendAoiService() {
+        super();
     }
 
     public String getConfig() {

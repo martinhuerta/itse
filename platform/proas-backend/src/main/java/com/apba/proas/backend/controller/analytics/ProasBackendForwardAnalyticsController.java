@@ -1,7 +1,8 @@
 package com.apba.proas.backend.controller.analytics;
 
-import java.util.logging.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +20,12 @@ import com.apba.proas.backend.model.Vessel;
 @RestController
 public class ProasBackendForwardAnalyticsController {
 
-    private AnalyticsWebClient analyticsWebClient = new AnalyticsWebClient();
+    @Autowired
+    private AnalyticsWebClient analyticsWebClient;
+
+    public ProasBackendForwardAnalyticsController() {
+        super();
+    }
 
     @GetMapping(value = "/test")
     public String getTest() {
@@ -46,11 +52,10 @@ public class ProasBackendForwardAnalyticsController {
     public AoiState getSecurityIndicatorById(@PathVariable("id") int id) {
         AoiState aoiState = null;
         try {
-            Logger.getLogger(this.getClass().getName()).info("---------llamada a /proas-backend/security/{}id");
+            log("/security/" + id);
             aoiState = analyticsWebClient.getSecurityIndicator(id);
         } catch (Exception e) {
-            Logger.getLogger(this.getClass().getName())
-                    .severe("---------/proas-backend/security/{}id} -- ERROR " + e);
+            log(this.getClass().getName() + "---------/proas-backend/security/{}id} -- ERROR " + e);
             e.printStackTrace();
         }
         return aoiState;
@@ -62,6 +67,12 @@ public class ProasBackendForwardAnalyticsController {
 
     public void setAnalyticsWebClient(AnalyticsWebClient analyticsWebClient) {
         this.analyticsWebClient = analyticsWebClient;
+    }
+
+    Logger logger = LoggerFactory.getLogger(ProasBackendForwardAnalyticsController.class);
+
+    void log(String s) {
+        logger.info("--------Http::/proas-backend/analytics" + s);
     }
 
 }

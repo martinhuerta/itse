@@ -13,14 +13,11 @@ public class Forecast {
 
     @Override
     public String toString() {
-        String s = getClass().getName() + " { "
-                + " gpsPoint = " + gpsPoint
-                + ", timestamp = " + timestamp
-                + ", windForecast = " + windForecast
-                + ", surgeForecast = " + surgeForecast
-                + ", seaLevelForecast = " + seaLevelForecast
-                + " }";
-        return s;
+        StringBuffer sb = new StringBuffer();
+        sb.append(getClass().getName())
+                .append(" { variableType = ");
+        sb.append(" }");
+        return sb.toString();
     }
 
     public GpsPoint getGpsPoint() {

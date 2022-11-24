@@ -2,10 +2,15 @@ package com.apba.proas.backend.test;
 
 import java.time.Duration;
 
+import javax.annotation.PostConstruct;
+
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+
 import com.apba.proas.backend.controller.analytics.AnalyticsWebClient;
 import com.apba.proas.backend.controller.analytics.AnalyticsWebClientConfig;
 import com.apba.proas.backend.controller.analytics.ProasBackendForwardAnalyticsController;
@@ -16,40 +21,51 @@ import com.apba.proas.backend.model.AoiState;
 import com.apba.proas.backend.model.JSonStr;
 import com.apba.proas.backend.model.Variable;
 import com.apba.proas.backend.model.Vessel;
-import com.apba.proas.backend.service.ProasBackendAoiService;
 
 @SpringBootTest
 class ProasBackendApplicationTests {
 	Logger logger = LoggerFactory.getLogger(ProasBackendApplicationTests.class);
 	AOI aoi;
 	static int otherID = 9;
-	ProasBackendAoiController controller;
-	ProasBackendAoiService service;
+
+	@Autowired
+	ProasBackendAoiController backendController;
+
+	@Autowired
 	ProasBackendForwardAnalyticsController analyticsController;
 
+	@Autowired
 	AnalyticsWebClient analyticsWebClient;
+
+	@Autowired
 	AnalyticsWebClientConfig config;
+
+	@Bean
+	ProasBackendAoiController gBackendAoiController() {
+		return new ProasBackendAoiController();
+	}
+
+	@Bean
+	ProasBackendForwardAnalyticsController gAnalyticsController() {
+		return new ProasBackendForwardAnalyticsController();
+	}
 
 	public ProasBackendApplicationTests() {
 		super();
 	}
 
+	@PostConstruct
 	void init() {
 		if (aoi == null) {
 			aoi = AoiBuilder.buildAOI(1, Variable.Type.WIND.toString());
 			AoiBuilder.buildAOI(otherID, Variable.Type.WIND.toString());
-			controller = new ProasBackendAoiController();
-			controller.init();
-			service = controller.getService();
-			analyticsController = new ProasBackendForwardAnalyticsController();
-			analyticsWebClient = analyticsController.getAnalyticsWebClient();
-			config = analyticsWebClient.getAnalyticsWebClientConfig();
 		}
 	}
 
 	// Spring
 	@Test
 	void contextLoads() {
+		assert backendController != null;
 	}
 
 	// JSonStr
@@ -61,30 +77,18 @@ class ProasBackendApplicationTests {
 	}
 
 	@Test
-	void configTest() {
-		init();
-		String s = config.getVersion();
-		// int i = s.indexOf("hardcoded");
-		// assert i < 0;
-		log("getConfig(): " + s);
-	}
-
-	@Test
 	void localTest() {
-		init();
 		log("Local AOIs: " + AoiBuilder.getAois());
-		aoi = AoiBuilder.buildAOI(1, Variable.Type.WIND.toString());
-		AoiBuilder.buildAOI(otherID, Variable.Type.WIND.toString());
 		AOI aoi1 = AoiBuilder.getAoi(9);
 		assert aoi1 != null;
 		assert aoi1.getId() == 9;
-		log("Servicio en local: service.getConfig()=" + service.getConfig());
-		log("Servicio con http: " + controller.getConfig());
+		log("Servicio en local: service.getConfig()=" + backendController.getService().getConfig());
+		AnalyticsWebClientConfig cfgHttp = backendController.getConfig();
+		log("Servicio con http: " + cfgHttp.toString());
 	}
 
 	@Test
 	void getHttpConfig() {
-		init();
 		try {
 			String x = analyticsWebClient.getResponse(config.getConfig())
 					.bodyToMono(String.class)
@@ -100,7 +104,6 @@ class ProasBackendApplicationTests {
 
 	@Test
 	void getHttpVessel() {
-		init();
 		Vessel v = aoi.getVessel();
 		analyticsWebClient.getAnalyticsWebClientConfig();
 		try {
@@ -120,7 +123,6 @@ class ProasBackendApplicationTests {
 
 	@Test
 	void getHttpSecurity() {
-		init();
 		try {
 			AoiState x = analyticsWebClient.getResponse(config.getSvcSecurity(), otherID)
 					.bodyToMono(AoiState.class)

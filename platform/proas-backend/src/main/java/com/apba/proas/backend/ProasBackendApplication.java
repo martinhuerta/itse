@@ -1,29 +1,41 @@
 package com.apba.proas.backend;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import com.apba.proas.backend.model.AOI;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import com.apba.proas.backend.model.AoiBuilder;
-import com.apba.proas.backend.model.JSonStr;
 import com.apba.proas.backend.model.Operation;
+import com.apba.proas.backend.service.BackendConfigProperties;
 
 @SpringBootApplication
+@ConfigurationPropertiesScan("com.apba.proas.backend")
 public class ProasBackendApplication {
 
 	public static int AOI_SIMULATED_NUMBER = 9;
-	static AOI aoi;
 
-	public static void main(String[] args) {
+	@Autowired
+	BackendConfigProperties backendConfigProperties;
 
-		SpringApplication.run(ProasBackendApplication.class, args);
+	@PostConstruct
+	public void init() {
 		Logger log = LoggerFactory.getLogger(ProasBackendApplication.class);
 		log.info("---------------info---ProasBackendApplication iniciado");
-		aoi = AoiBuilder.buildAoiWind();
+		AoiBuilder.buildAoiWind();
 		AoiBuilder.buildAOI(AOI_SIMULATED_NUMBER, Operation.Type.SECURITY.toString());
-		JSonStr.getJSonStr().obj2json(aoi.getVessel());
 
+		String version = backendConfigProperties != null ? backendConfigProperties.getVersion()
+				: BackendConfigProperties.CONFIG_VERSION;
+		LoggerFactory.getLogger(ProasBackendApplication.class)
+				.info("---------------- ProasBackendApplication - VERSION CONFIGURACION = " + version);
 	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(ProasBackendApplication.class, args);
+	}
+
 }

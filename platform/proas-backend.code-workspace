@@ -1,0 +1,10 @@
+{
+	"folders": [
+		{
+			"path": "proas-backend"
+		}
+	],
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "interactive"
+	}
+}

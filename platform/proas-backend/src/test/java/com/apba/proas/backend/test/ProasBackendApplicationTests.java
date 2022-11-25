@@ -1,7 +1,5 @@
 package com.apba.proas.backend.test;
 
-import java.time.Duration;
-
 import javax.annotation.PostConstruct;
 
 import org.junit.jupiter.api.Test;
@@ -9,10 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
-
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
 import com.apba.proas.backend.controller.analytics.AnalyticsWebClient;
 import com.apba.proas.backend.controller.analytics.AnalyticsWebClientConfig;
+import com.apba.proas.backend.controller.analytics.ProasBackendConfig;
 import com.apba.proas.backend.controller.analytics.ProasBackendForwardAnalyticsController;
 import com.apba.proas.backend.controller.server.ProasBackendAoiController;
 import com.apba.proas.backend.model.AOI;
@@ -20,12 +20,18 @@ import com.apba.proas.backend.model.AoiBuilder;
 import com.apba.proas.backend.model.AoiState;
 import com.apba.proas.backend.model.JSonStr;
 import com.apba.proas.backend.model.Variable;
-import com.apba.proas.backend.model.Vessel;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ProasBackendApplicationTests {
+
+	@LocalServerPort
+	private int port;
+
+	@Autowired
+	private TestRestTemplate restTemplate;
+
 	Logger logger = LoggerFactory.getLogger(ProasBackendApplicationTests.class);
-	AOI aoi;
+	static AOI aoi;
 	static int otherID = 9;
 
 	@Autowired
@@ -39,16 +45,6 @@ class ProasBackendApplicationTests {
 
 	@Autowired
 	AnalyticsWebClientConfig config;
-
-	@Bean
-	ProasBackendAoiController gBackendAoiController() {
-		return new ProasBackendAoiController();
-	}
-
-	@Bean
-	ProasBackendForwardAnalyticsController gAnalyticsController() {
-		return new ProasBackendForwardAnalyticsController();
-	}
 
 	public ProasBackendApplicationTests() {
 		super();
@@ -71,65 +67,83 @@ class ProasBackendApplicationTests {
 	// JSonStr
 	@Test
 	void jSonStrTest() {
-		init();
 		assert aoi != null;
-		JSonStr.getJSonStr().obj2json(aoi.getVessel());
+		log("vessel= " + JSonStr.getJSonStr().obj2json(aoi.getVessel()));
 	}
 
 	@Test
-	void localTest() {
+	void configFromFileTests() {
 		log("Local AOIs: " + AoiBuilder.getAois());
 		AOI aoi1 = AoiBuilder.getAoi(9);
 		assert aoi1 != null;
 		assert aoi1.getId() == 9;
 		log("Servicio en local: service.getConfig()=" + backendController.getService().getConfig());
-		AnalyticsWebClientConfig cfgHttp = backendController.getConfig();
+
+		ProasBackendConfig cfgHttp = backendController.getConfig();
+		assert !ProasBackendConfig.CONFIG_VERSION.equals(cfgHttp.getVersion());
 		log("Servicio con http: " + cfgHttp.toString());
 	}
 
 	@Test
-	void getHttpConfig() {
-		try {
-			String x = analyticsWebClient.getResponse(config.getConfig())
-					.bodyToMono(String.class)
-					.block(Duration.ofSeconds(config.getTimeout()));
-			assert x != null;
-			log("Test getHttpConfig() OK: " + x);
-		} catch (Exception e) {
-			log("ERROR - Debes tener el servicio ProasBackendApplication lanzado");
-			e.printStackTrace();
-			throw e;
-		}
+	void httpProasBackendTest() {
+		String s;
+		s = this.restTemplate.getForObject("http://localhost:" + port + "/proas-backend/version", String.class);
+		assert s != null;
+		log("test: " + s);
+
+		s = this.restTemplate.getForObject("http://localhost:" + port + "/proas-backend/config", String.class);
+		assert s != null && !s.contains(ProasBackendConfig.CONFIG_VERSION);
+		log("config: " + s);
+
+		s = this.restTemplate.getForObject("http://localhost:" + port + "/proas-backend/vessel", String.class);
+		assert s != null && s.contains(aoi.getVessel().getVesselType().toString());
+		log("vessel: " + s);
+
 	}
 
 	@Test
-	void getHttpVessel() {
-		Vessel v = aoi.getVessel();
+	void httpRemoteAnalyticsOnThisPortTest() {
+		String s;
+		int remotePort = port;
+
+		// Para probar en remoto, otra aplicación Analytics levantada poner este puerto
+		// remotePort = config.getPort();
+
+		s = this.restTemplate.getForObject("http://localhost:" + remotePort + "/proas-backend/analytics/version",
+				String.class);
+		assert s != null && !s.contains("error");
+		log("test: " + s);
+
+		s = this.restTemplate.getForObject("http://localhost:" + remotePort + "/proas-backend/analytics/config",
+				String.class);
+		assert s != null && !s.contains("error");
+		log("config: " + s);
+
+		s = this.restTemplate.getForObject("http://localhost:" + remotePort + "/proas-backend/analytics/vessel",
+				String.class);
+		assert s != null && s.contains("Hello");
+		log("vessel: " + s);
+
+		s = this.restTemplate.getForObject("http://localhost:" + remotePort + "/proas-backend/analytics/security/{id}",
+				String.class);
+		assert s != null && s.contains("Hello");
+		log("vessel: " + s);
+	}
+
+	@Test
+	void remoteWebClientOnRemotePortTest() {
 		analyticsWebClient.getAnalyticsWebClientConfig();
 		try {
-			Vessel x = analyticsWebClient.getResponse(config.getSvcVessel())
-					.bodyToMono(Vessel.class)
-					.block(Duration.ofSeconds(config.getTimeout()));
 
-			assert x != null;
-			assert x.getDWT() == v.getDWT();
-			log("Test getHttpVessel() OK: " + x);
-		} catch (Exception e) {
-			log("ERROR - Debes tener el servicio ProasBackendApplication lanzado");
-			e.printStackTrace();
-			throw e;
-		}
-	}
+			ProasBackendConfig c = analyticsController.getConfig();
+			assert c != null && !ProasBackendConfig.CONFIG_VERSION.equals(c.getVersion());
 
-	@Test
-	void getHttpSecurity() {
-		try {
-			AoiState x = analyticsWebClient.getResponse(config.getSvcSecurity(), otherID)
-					.bodyToMono(AoiState.class)
-					.block(Duration.ofSeconds(config.getTimeout()));
-			assert x != null;
-			assert x.getAoiId() == otherID;
-			log("Test getHttpSecurity() OK: " + x);
+			String s = analyticsController.getTest();
+			assert s != null;
+
+			AoiState a = analyticsController.getSecurityIndicatorById(otherID);
+			assert a != null && a.getAoiId() == otherID;
+
 		} catch (Exception e) {
 			log("ERROR - Debes tener el servicio ProasBackendApplication lanzado");
 			e.printStackTrace();

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.apba.proas.backend.controller.analytics.AnalyticsWebClientConfig;
+import com.apba.proas.backend.controller.analytics.ProasBackendConfig;
 import com.apba.proas.backend.model.AOI;
 import com.apba.proas.backend.model.Vessel;
 import com.apba.proas.backend.service.ProasBackendAoiService;
@@ -56,10 +57,16 @@ public class ProasBackendAoiController {
         return "{msg: Hello from proas-backend}";
     }
 
+    @GetMapping(value = "/version")
+    public String getVersion() {
+        log("/version");
+        return analyticsWebClientConfig.getVersion();
+    }
+
     @GetMapping(value = "/config")
-    public AnalyticsWebClientConfig getConfig() {
+    public ProasBackendConfig getConfig() {
         log("/config");
-        return analyticsWebClientConfig;
+        return new ProasBackendConfig(analyticsWebClientConfig);
     }
 
     @GetMapping(value = "/vessel")

@@ -8,9 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+
+import com.apba.proas.backend.controller.analytics.ProasBackendConfig;
 import com.apba.proas.backend.model.AoiBuilder;
 import com.apba.proas.backend.model.Operation;
-import com.apba.proas.backend.service.BackendConfigProperties;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan("com.apba.proas.backend")
@@ -19,7 +20,7 @@ public class ProasBackendApplication {
 	public static int AOI_SIMULATED_NUMBER = 9;
 
 	@Autowired
-	BackendConfigProperties backendConfigProperties;
+	ProasBackendConfig backendConfig;
 
 	@PostConstruct
 	public void init() {
@@ -28,8 +29,8 @@ public class ProasBackendApplication {
 		AoiBuilder.buildAoiWind();
 		AoiBuilder.buildAOI(AOI_SIMULATED_NUMBER, Operation.Type.SECURITY.toString());
 
-		String version = backendConfigProperties != null ? backendConfigProperties.getVersion()
-				: BackendConfigProperties.CONFIG_VERSION;
+		String version = backendConfig != null ? backendConfig.getVersion()
+				: ProasBackendConfig.CONFIG_VERSION;
 		LoggerFactory.getLogger(ProasBackendApplication.class)
 				.info("---------------- ProasBackendApplication - VERSION CONFIGURACION = " + version);
 	}

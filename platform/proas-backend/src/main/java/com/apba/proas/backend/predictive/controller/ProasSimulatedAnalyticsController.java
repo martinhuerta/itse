@@ -1,12 +1,13 @@
 package com.apba.proas.backend.predictive.controller;
 
+import com.apba.proas.backend.controller.analytics.AnalyticsWebClientConfig;
+import com.apba.proas.backend.controller.analytics.ProasBackendConfig;
 import com.apba.proas.backend.model.AOI;
 import com.apba.proas.backend.model.AoiBuilder;
 import com.apba.proas.backend.model.AoiState;
-import com.apba.proas.backend.model.Vessel;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,20 +22,23 @@ import javax.annotation.PostConstruct;
 public class ProasSimulatedAnalyticsController {
     public static int AOI_SIMULATED_NUMBER = 9;
 
+    @Autowired
+    AnalyticsWebClientConfig analyticsWebClientConfig;
+
     public ProasSimulatedAnalyticsController() {
         super();
     }
 
-    @GetMapping(value = "/config")
-    public String getConfig() {
-        log("/config");
-        return "{ 'msg' : 'Hello from proas-predictive' }";
+    @GetMapping(value = "/test")
+    public String getTest() {
+        log("/test");
+        return "{msg : Hello from /proas-predictives}";
     }
 
-    @GetMapping(value = "/vessel")
-    public Vessel getVessel() {
-        log("/vessel");
-        return AoiBuilder.getFirstAoi().getVessel();
+    @GetMapping(value = "/config")
+    public ProasBackendConfig getConfig() {
+        log("/config");
+        return new ProasBackendConfig(analyticsWebClientConfig);
     }
 
     @RequestMapping(value = "/security/{id}", method = RequestMethod.GET)

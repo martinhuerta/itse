@@ -43,56 +43,60 @@ public class AnalyticsWebClient {
         if (analyticsWebClientConfig == null) {
             logger.error("AnalyticsWebclient:AnalyticsWebClientConfig NO SE HA INICIALIZADO DE FICHERO");
         }
-        log("AnalyticsWebClient inicializado OK");
+        log("AnalyticsWebClient inicializado", "ok");
     }
 
     public AnalyticsWebClient() {
         super();
     }
 
-    public String getConfig() {
-        log("AnalyticsWebClientConfig = " + analyticsWebClientConfig);
-        String x = getResponse(analyticsWebClientConfig.getConfig())
+    public String getTest() {
+        String x = getResponse(analyticsWebClientConfig.getUriTest())
                 .bodyToMono(String.class)
                 .block(Duration.ofSeconds(analyticsWebClientConfig.getTimeout()));
-        log("Config:" + x);
+        log(analyticsWebClientConfig.getUriConfig(), x);
         return x;
     }
 
-    public Vessel getVessel() {
-        Vessel x = getResponse(analyticsWebClientConfig.getSvcVessel())
-                .bodyToMono(Vessel.class)
+    public ProasBackendConfig getConfig() {
+        ProasBackendConfig x = getResponse(analyticsWebClientConfig.getUriConfig())
+                .bodyToMono(ProasBackendConfig.class)
                 .block(Duration.ofSeconds(analyticsWebClientConfig.getTimeout()));
-        log("Vessel:" + x);
-        return x;
-    }
-
-    public Vessel getVesselSimple() {
-        Vessel x = WebClient
-                .create(analyticsWebClientConfig.getUrl() + analyticsWebClientConfig.getApplication())
-                .get()
-                .uri(analyticsWebClientConfig.getSvcVessel())
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .bodyToMono(Vessel.class)
-                .block(Duration.ofSeconds(analyticsWebClientConfig.getTimeout()));
-
-        log("Vessel:" + x);
+        log(analyticsWebClientConfig.getUriConfig(), x);
         return x;
     }
 
     public AoiState getSecurityIndicator(@PathVariable int id) {
-        AoiState x = getResponse(analyticsWebClientConfig.getSvcSecurity(), id)
+        AoiState x = getResponse(analyticsWebClientConfig.getUriSecurity(), id)
                 .bodyToMono(AoiState.class)
                 .block(Duration.ofSeconds(analyticsWebClientConfig.getTimeout()));
-        log("Vessel:" + x);
+        log(analyticsWebClientConfig.getUriSecurity(), x);
         return x;
     }
 
     public ResponseSpec getResponse(String uri, Object... objects) {
+        ResponseSpec rs = WebClient
+                .create(analyticsWebClientConfig.getUrl() + ":" + analyticsWebClientConfig.getPort()
+                        + analyticsWebClientConfig.getApplication())
+                .get()
+                .uri(uri, objects)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve();
+        return rs;
+    }
+
+    public Vessel getVesselComplejo() {
+        Vessel x = getResponseComplejo(analyticsWebClientConfig.getUriVessel())
+                .bodyToMono(Vessel.class)
+                .block(Duration.ofSeconds(analyticsWebClientConfig.getTimeout()));
+        return x;
+    }
+
+    public ResponseSpec getResponseComplejo(String uri, Object... objects) {
         WebClient webClient = WebClient
                 .builder()
-                .baseUrl(analyticsWebClientConfig.getUrl() + analyticsWebClientConfig.getApplication())
+                .baseUrl(analyticsWebClientConfig.getUrl() + ":" + analyticsWebClientConfig.getPort()
+                        + analyticsWebClientConfig.getApplication())
                 .build();
 
         RequestBodyUriSpec bodySpec = webClient.method(HttpMethod.GET);
@@ -103,9 +107,6 @@ public class AnalyticsWebClient {
                 .queryParam("par1", "miname")
                 .queryParam("par2", "misurname")
                 .build(objects)); // Se le pasan los parámetros del path
-        bodySpec.ifNoneMatch("*");
-        // RestTemplate rt=new RestTemplate();
-        // rt.
 
         RequestHeadersSpec<?> headersSpec = bodySpec.bodyValue("data");
         headersSpec.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -130,9 +131,9 @@ public class AnalyticsWebClient {
         }
     }
 
-    private void log(String s) {
+    private void log(String s, Object x) {
         // System.out.println(s);
-        logger.info("------------- ------------- " + s);
+        logger.info("-------------WebClient::  " + s + "--> " + x);
     }
 
 }

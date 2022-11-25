@@ -18,7 +18,7 @@
 	<properties>
 		<java.version>11</java.version>
 	</properties>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 
 	<dependencies>
 		<dependency>
@@ -29,6 +29,11 @@
 		<dependency>
 			<groupId>com.apba.proas</groupId>
 			<artifactId>proas-frontend</artifactId>		
+			<version>1</version>
+		</dependency>	
+		<dependency>
+			<groupId>com.apba.proas</groupId>
+			<artifactId>proas-predictive</artifactId>		
 			<version>1</version>
 		</dependency>	
 	</dependencies>
@@ -42,6 +47,11 @@
 		</plugins>
 	</build>
 
+	<modules>
+		<module>com.microsoft.java.debug.core</module>
+		<module>com.microsoft.java.debug.plugin</module>
+		<module>com.microsoft.java.debug.repository</module>
+	</modules>
 
 
 	<dependencyManagement>

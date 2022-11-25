@@ -4,21 +4,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.apba.proas.backend.controller.analytics.AnalyticsWebClientConfig;
-import com.apba.proas.backend.service.BackendConfigProperties;
+import com.apba.proas.backend.controller.analytics.ProasBackendConfig;
 
 @SpringBootTest
 public class VariosTests {
 
     @Autowired
-    BackendConfigProperties backendConfigProperties;
+    ProasBackendConfig proasBackendConfig;
 
     @Autowired
     AnalyticsWebClientConfig analyticsWebClientConfig;
 
     @Test
     void configVersionTet() {
-        assert backendConfigProperties != null;
-        assert !BackendConfigProperties.CONFIG_VERSION.equals(backendConfigProperties.getVersion());
+        assert proasBackendConfig != null;
+        assert !ProasBackendConfig.CONFIG_VERSION.equals(proasBackendConfig.getVersion());
     }
 
     @Test

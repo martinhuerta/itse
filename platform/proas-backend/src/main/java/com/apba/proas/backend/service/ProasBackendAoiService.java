@@ -29,6 +29,10 @@ public class ProasBackendAoiService {
                 .get().getVessel();
     }
 
+    public String getVersion() {
+        return "version-hardcoded-in-ProasBackendAoiService";
+    }
+
     public List<String> getAois() {
         List<String> l = AoiBuilder.getAois();
         return l;
